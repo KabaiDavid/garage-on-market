@@ -16,7 +16,7 @@ PICKS = {
  'margarita':'7737784','gimlet':'7737792','street':'7737770','spread':'7737809',
 }
 SPOT='https://www.spothopperapp.com/api/spots/110912'
-cache=sys.argv[1]; out=os.path.join(os.path.dirname(__file__),'..','assets','img'); os.makedirs(out,exist_ok=True); os.makedirs(cache,exist_ok=True)
+cache=sys.argv[1]; out=os.path.join(os.path.dirname(__file__),'..','public','assets','img'); os.makedirs(out,exist_ok=True); os.makedirs(cache,exist_ok=True)
 spot=json.load(urllib.request.urlopen(urllib.request.Request(SPOT,headers={'User-Agent':'Mozilla/5.0'})))
 paths={str(i['id']):i['urls']['original'] for i in spot['linked']['images']}
 manifest={}

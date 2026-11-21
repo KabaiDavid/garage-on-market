@@ -1,27 +1,60 @@
-# Garage Bar — garageonmarket.com redesign
+# Garage Bar — garageonmarket.com
 
-A static, dependency-free website for Garage Bar (700 E. Market St., NuLu, Louisville).
-Concept: **"Service Bay"** — the building's auto-garage past, presented as numbered bays
+Website for Garage Bar, 700 E. Market St., NuLu, Louisville.
+The concept is **"Service Bay"**: the building's past as an auto garage, shown as numbered bays
 (The Building, The Oven, The Bar, Art at Garage, The Lot, Book the Garage, Find the Garage).
 
-## Structure
-- `src/*.html`, `src/partials/` — page sources (edit these)
-- `index.html`, `menu/`, `events/`, `404.html` — built output (deploy the repo root)
-- `assets/css/site.css`, `assets/js/site.js` — the design system and interactions (vanilla JS)
-- `assets/img/` — responsive AVIF/WebP/JPEG photography (the restaurant's own photos)
-- `assets/video/` — hero loop cut from the restaurant's own brand video (WebM VP9 + MP4 H.264)
+It's a static site with **no framework and no runtime dependencies**: plain HTML, CSS and JavaScript,
+put together by a small Node build script.
 
-## Build
+## Deploy — Cloudflare Pages
+
+| Setting                | Value           |
+|------------------------|-----------------|
+| Framework preset       | **None**        |
+| Build command          | `npm run build` |
+| Build output directory | `dist`          |
+| Root directory         | *(leave empty — repository root)* |
+| Production branch      | `main`          |
+| Node version           | 18 or newer (`.nvmrc` pins 20) |
+
+`public/_headers` sets the caching and security headers. Cloudflare Pages serves `dist/404.html`
+automatically for unknown URLs.
+
+## Local development
+
 ```bash
-python3 tools/build_pages.py          # render src/ → site root
-python3 tools/build_images.py <cache> # re-fetch and re-encode photography (needs Pillow with AVIF)
+npm run build     # src/ + public/ → dist/  (also checks that every referenced asset exists)
+npm run preview   # serves dist/ at http://localhost:4173
+npm run dev       # build, then preview
 ```
 
-## Content sources
-Everything comes from the restaurant's public website and its SpotHopper data feed: copy, hours,
-contact, cocktail list and prices, Google reviews shown on the current site, photos and video.
-The food menu is not itemized here. The current menu lives on the Toast ordering page,
-which is linked throughout.
+## Structure
 
-## Deploy
-Any static host. `netlify.toml` sets the cache headers.
+```
+src/                 page sources: index.html, menu.html, events.html, 404.html
+src/partials/        header + footer, shared by all pages
+public/              copied to dist/ unchanged
+  assets/css/        site.css: the design system
+  assets/js/         site.js: interactions (vanilla, progressive enhancement)
+  assets/img/        restaurant photography in AVIF / WebP / JPEG at 640, 1200 and 1920px
+  assets/video/      hero loop cut from the restaurant's own video (WebM VP9 + MP4 H.264)
+  assets/fonts/      self-hosted WOFF2 fonts
+  _headers           Cloudflare Pages headers
+  robots.txt, sitemap.xml, site.webmanifest, favicons
+scripts/build.mjs    the build (zero dependencies)
+scripts/preview.mjs  local static server
+scripts/build_images.py  optional: re-fetch and re-encode photography (Python + Pillow with AVIF)
+```
+
+### Template tags (in `src/`)
+- `{{>header}}`: include `src/partials/header.html`
+- `{{img:name|alt text|sizes|class|eager}}`: responsive `<picture>` for `public/assets/img/name-*.{avif,webp,jpg}`
+- `{{active:menu}}`: marks the nav link for the current page with `aria-current="page"`
+
+## Content sources
+All content comes from the restaurant's public website and its SpotHopper data feed: copy, hours,
+contact details, the cocktail list and prices, the Google reviews shown on the current site, photos
+and video. The food menu is not itemized here. The current menu lives on the Toast ordering page,
+which is linked throughout. Add the itemized food menu to `src/menu.html` once the restaurant
+supplies it.
