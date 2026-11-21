@@ -21,8 +21,7 @@
 <link rel="manifest" href="/site.webmanifest">
 <link rel="preload" href="/assets/fonts/big-shoulders-display.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/archivo.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" as="image" href="/assets/video/hero-poster-port.avif" type="image/avif" media="(max-aspect-ratio: 1/1)">
-<link rel="preload" as="image" href="/assets/video/hero-poster-land.avif" type="image/avif" media="(min-aspect-ratio: 1001/1000)">
+<link rel="preload" as="image" href="/assets/video/hero-poster-720p.avif" type="image/avif">
 <link rel="stylesheet" href="/assets/css/site.css">
 <script type="application/ld+json">
 {
@@ -60,15 +59,12 @@
 <section class="hero" aria-labelledby="hero-title">
   <div class="hero__media">
     <picture>
-      <source type="image/avif" media="(max-aspect-ratio: 1/1)" srcset="/assets/video/hero-poster-port.avif">
-      <source type="image/webp" media="(max-aspect-ratio: 1/1)" srcset="/assets/video/hero-poster-port.webp">
-      <source type="image/jpeg" media="(max-aspect-ratio: 1/1)" srcset="/assets/video/hero-poster-port.jpg">
-      <source type="image/avif" srcset="/assets/video/hero-poster-land.avif">
-      <source type="image/webp" srcset="/assets/video/hero-poster-land.webp">
-      <img src="/assets/video/hero-poster-land.jpg" alt="" width="1280" height="720" fetchpriority="high" class="hero__poster">
+      <source type="image/avif" srcset="/assets/video/hero-poster-720p.avif">
+      <source type="image/webp" srcset="/assets/video/hero-poster-720p.webp">
+      <img src="/assets/video/hero-poster-720p.jpg" alt="" width="1280" height="720" fetchpriority="high" class="hero__poster">
     </picture>
-    <video class="hero__video" muted playsinline loop preload="none" aria-hidden="true" tabindex="-1" data-hero-video
-      data-src-port="/assets/video/hero-port" data-src-land="/assets/video/hero-land"></video>
+    <video class="hero__video" muted playsinline loop preload="none" disableremoteplayback aria-hidden="true" tabindex="-1" data-hero-video
+      data-src="/assets/video/hero-720p"></video>
     <div class="hero__shade" aria-hidden="true"></div>
   </div>
   <div class="hero__door" aria-hidden="true"><span></span></div>
@@ -239,6 +235,7 @@
 <!-- ═════════ 04 · ART AT GARAGE ═════════ -->
 <section class="crash" id="art" aria-labelledby="crash-title" data-crash>
   <div class="crash__stage">
+    <div class="crash__ghost" aria-hidden="true">{{img:collision||40vw}}</div>
     <div class="crash__cars" aria-hidden="true">
       <div class="crash__half crash__half--l">{{img:collision||100vw|crash__pic}}</div>
       <div class="crash__half crash__half--r">{{img:collision||100vw|crash__pic}}</div>
@@ -282,6 +279,7 @@
 
 <!-- ═════════ WORD ON MARKET ST ═════════ -->
 <section class="word" aria-labelledby="word-title">
+  <div class="word__bg" aria-hidden="true">{{img:backbar||100vw}}</div>
   <div class="word__inner">
     <div class="word__side">
       <p class="label">Guest reviews · Google</p>
@@ -291,6 +289,12 @@
         <p class="word__count label" aria-hidden="true"><span data-rev-n>01</span> / 04</p>
         <button type="button" class="round" data-rev-next><span class="sr-only">Next review</span><span aria-hidden="true">→</span></button>
       </div>
+      <ul class="word__tabs" aria-label="Choose a review">
+        <li><button type="button" data-rev-tab="0" aria-pressed="true"><span>01</span>Malcolm H.</button></li>
+        <li><button type="button" data-rev-tab="1" aria-pressed="false"><span>02</span>Elizabeth C.</button></li>
+        <li><button type="button" data-rev-tab="2" aria-pressed="false"><span>03</span>Tim</button></li>
+        <li><button type="button" data-rev-tab="3" aria-pressed="false"><span>04</span>Sheryl B.</button></li>
+      </ul>
       <a class="link" href="https://www.google.com/search?q=Garage+Bar+700+East+Market+Street+Louisville#lrd=0x886972c4371cfdb7:0xb5b0b2dde3452f30,1,,,," target="_blank" rel="noopener">Read all reviews on Google →</a>
     </div>
     <div class="word__stack" data-reviews aria-live="polite">
@@ -299,17 +303,17 @@
         <blockquote><p>The drinks are great, and the pizza and wings were out of this world. The bartenders and kitchen staff are amazing, too. I will definitely be back here many times.</p></blockquote>
         <figcaption>Malcolm H. <span>· Google review</span></figcaption>
       </figure>
-      <figure class="rev" hidden>
+      <figure class="rev" aria-hidden="true">
         <p class="rev__stars" aria-label="Five-star review">★★★★★</p>
         <blockquote><p>First time here. This place is so cool, if we lived here, we would be here a lot. The pizza is so yummy and the service is great.</p></blockquote>
         <figcaption>Elizabeth C. <span>· Google review</span></figcaption>
       </figure>
-      <figure class="rev" hidden>
+      <figure class="rev" aria-hidden="true">
         <p class="rev__stars" aria-label="Five-star review">★★★★★</p>
         <blockquote><p>Any place with outdoor seating is nice and this place is one of them! They have many draft beers, different cocktails, and a food menu! … They also have ping pong tables and board games you can play. Definitely a nice place to check out for some drinks and fun!</p></blockquote>
         <figcaption>Tim <span>· Google review</span></figcaption>
       </figure>
-      <figure class="rev" hidden>
+      <figure class="rev" aria-hidden="true">
         <p class="rev__stars" aria-label="Five-star review">★★★★★</p>
         <blockquote><p>We stopped for a cocktail and sat at the bar. We thoroughly enjoyed the atmosphere and the people. The bartender was pretty awesome too!</p></blockquote>
         <figcaption>Sheryl B. <span>· Google review</span></figcaption>

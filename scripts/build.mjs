@@ -10,6 +10,7 @@
 
 import { readFileSync, writeFileSync, mkdirSync, rmSync, cpSync, existsSync, statSync, readdirSync } from 'node:fs';
 import { join, dirname, relative } from 'node:path';
+import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -57,8 +58,15 @@ rmSync(DIST, { recursive: true, force: true });
 cpSync(PUBLIC, DIST, { recursive: true, filter: src => !src.endsWith('manifest.json') || !src.includes(join('assets', 'img')) });
 
 // 2. render pages
+// Cache-busting: CSS/JS URLs carry a content hash, so a new deploy can never run new HTML
+// against an old cached stylesheet or script (and those files can be cached long-term).
+const hashOf = rel => createHash('sha256').update(readFileSync(join(PUBLIC, rel))).digest('hex').slice(0, 10);
+const VERSIONED = ['assets/css/site.css', 'assets/js/site.js'];
+const bust = html => VERSIONED.reduce((h, rel) => h.replaceAll(`"/${rel}"`, `"/${rel}?v=${hashOf(rel)}"`), html);
 for (const [src, dst, key] of PAGES) {
-  const html = render(readFileSync(join(SRC, src), 'utf8'), key);
+  const html = bust(render(readFileSync(join(SRC, src), 'utf8'), key)
+    .replace('<meta charset="utf-8">', '<meta charset="utf-8">\n<meta name="color-scheme" content="dark">'));
+  for (const rel of VERSIONED) if (html.includes(`"/${rel}"`)) errors.push(`${dst}: unversioned /${rel}`);
   if (/\{\{/.test(html)) errors.push(`Unrendered template tag left in ${dst}`);
   const out = join(DIST, dst);
   mkdirSync(dirname(out), { recursive: true });
@@ -69,7 +77,7 @@ for (const [src, dst, key] of PAGES) {
 // 3. verify every local asset referenced by the pages exists in dist
 for (const [, dst] of PAGES) {
   const html = readFileSync(join(DIST, dst), 'utf8');
-  const refs = new Set([...html.matchAll(/(?:src|href|srcset)="([^"]+)"/g)]
+  const refs = new Set([...html.matchAll(/(?<![\w-])(?:src|href|srcset)="([^"]+)"/g)]
     .flatMap(m => m[1].split(',').map(s => s.trim().split(' ')[0]))
     .filter(u => u.startsWith('/') && !u.startsWith('//')));
   for (const u of refs) {
@@ -77,8 +85,8 @@ for (const [, dst] of PAGES) {
     const ok = existsSync(p) && (statSync(p).isFile() || existsSync(join(p, 'index.html')));
     if (!ok) errors.push(`${dst}: missing ${u}`);
   }
-  // hero video: data-src-* hold a basename; every variant must exist in both codecs
-  for (const m of html.matchAll(/data-src-\w+="([^"]+)"/g))
+  // hero video: data-src holds a basename; it must exist in both codecs
+  for (const m of html.matchAll(/data-src="([^"]+)"/g))
     for (const ext of ['.webm', '.mp4']) if (!existsSync(join(DIST, m[1] + ext))) errors.push(`${dst}: missing ${m[1]}${ext}`);
 }
 

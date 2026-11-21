@@ -3,17 +3,27 @@
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=()
 
+# HTML: always revalidate so a deploy is picked up immediately
+/
+  Cache-Control: public, max-age=0, must-revalidate
+/menu/
+  Cache-Control: public, max-age=0, must-revalidate
+/events/
+  Cache-Control: public, max-age=0, must-revalidate
+
+# CSS/JS are requested with a content hash (?v=…) by the build, so they can be cached for good
+/assets/css/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/assets/js/*
+  Cache-Control: public, max-age=31536000, immutable
+
 /assets/img/*
   Cache-Control: public, max-age=31536000, immutable
 
 /assets/fonts/*
   Cache-Control: public, max-age=31536000, immutable
 
+# video filenames change whenever the video changes
 /assets/video/*
   Cache-Control: public, max-age=2592000
-
-/assets/css/*
-  Cache-Control: public, max-age=3600, must-revalidate
-
-/assets/js/*
-  Cache-Control: public, max-age=3600, must-revalidate
