@@ -38,7 +38,8 @@ public/              copied to dist/ unchanged
   assets/css/        site.css: the design system
   assets/js/         site.js: interactions (vanilla, progressive enhancement)
   assets/img/        restaurant photography in AVIF / WebP / JPEG at 640, 1200 and 1920px
-  assets/video/      hero loop cut from the restaurant's own video (WebM VP9 + MP4 H.264)
+  assets/video/      hero loop from the restaurant's own video: landscape 1280x720 + portrait 720x1280,
+                     WebM VP9 + MP4 H.264 (rebuild: scripts/build_hero_video.sh <original.mp4>)
   assets/fonts/      self-hosted WOFF2 fonts
   _headers           Cloudflare Pages headers
   robots.txt, sitemap.xml, site.webmanifest, favicons

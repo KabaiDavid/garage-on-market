@@ -69,15 +69,17 @@ for (const [src, dst, key] of PAGES) {
 // 3. verify every local asset referenced by the pages exists in dist
 for (const [, dst] of PAGES) {
   const html = readFileSync(join(DIST, dst), 'utf8');
-  const refs = new Set([...html.matchAll(/(?:src|href|srcset|data-src-sm|data-src-lg)="([^"]+)"/g)]
+  const refs = new Set([...html.matchAll(/(?:src|href|srcset)="([^"]+)"/g)]
     .flatMap(m => m[1].split(',').map(s => s.trim().split(' ')[0]))
     .filter(u => u.startsWith('/') && !u.startsWith('//')));
   for (const u of refs) {
     const p = join(DIST, decodeURIComponent(u.split(/[?#]/)[0]));
     const ok = existsSync(p) && (statSync(p).isFile() || existsSync(join(p, 'index.html')));
     if (!ok) errors.push(`${dst}: missing ${u}`);
-    if (u.endsWith('.mp4') && !existsSync(p.replace('.mp4', '.webm'))) errors.push(`${dst}: missing WebM for ${u}`);
   }
+  // hero video: data-src-* hold a basename; every variant must exist in both codecs
+  for (const m of html.matchAll(/data-src-\w+="([^"]+)"/g))
+    for (const ext of ['.webm', '.mp4']) if (!existsSync(join(DIST, m[1] + ext))) errors.push(`${dst}: missing ${m[1]}${ext}`);
 }
 
 if (errors.length) {

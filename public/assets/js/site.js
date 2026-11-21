@@ -66,9 +66,16 @@
   const vid = $('[data-hero-video]'), toggle = $('[data-video-toggle]');
   const conn = navigator.connection || {};
   if (vid && !reduce && !conn.saveData && !/(^|-)2g/.test(conn.effectiveType || '')) {
-    const sz = innerWidth <= 900 ? 'Sm' : 'Lg';
-    const webm = vid.canPlayType('video/webm; codecs="vp9"');
-    vid.src = webm ? vid.dataset['src' + sz].replace('.mp4', '.webm') : vid.dataset['src' + sz];
+    // Portrait screens get a dedicated 720x1280 encode (full source resolution in the visible crop);
+    // landscape screens get the native 1280x720. VP9/WebM where supported, H.264/MP4 otherwise (Safari).
+    const ext = vid.canPlayType('video/webm; codecs="vp9"') ? '.webm' : '.mp4';
+    const portrait = matchMedia('(max-aspect-ratio: 1/1)');
+    const pick = () => (portrait.matches ? vid.dataset.srcPort : vid.dataset.srcLand) + ext;
+    vid.src = pick();
+    portrait.addEventListener?.('change', () => {
+      const t = vid.currentTime, playing = !vid.paused;
+      vid.src = pick(); vid.currentTime = t; if (playing) vid.play().catch(() => {});
+    });
     const start = () => vid.play().then(() => { vid.classList.add('is-playing'); toggle.hidden = false; }).catch(() => {});
     const later = () => setTimeout(() => (window.requestIdleCallback || setTimeout)(start, { timeout: 1500 }), 1200);
     if (d.readyState === 'complete') later(); else addEventListener('load', later);
